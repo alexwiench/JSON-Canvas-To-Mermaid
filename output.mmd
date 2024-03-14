@@ -1,0 +1,16 @@
+flowchart TB
+subgraph Group_of_Object_1__2_and_4_with_a_custom_color
+style d7efb8bc16e49501 fill:#ae6cb7
+a5bb7e27d5b42a00[Object_1]
+453bc2b74f0bd4c3[Object_2_is_green]
+style 453bc2b74f0bd4c3 fill:4
+449cb2e419710224[Object_3]
+099fff712178de35[Obsidian_Note_md]
+4aa0add92be9e08c[Object_4_is_red]
+style 4aa0add92be9e08c fill:1
+end
+Object_1 --> |Text on the arrow pointing to object 2
+| Object_2_is_green
+Object_2_is_green --> |This one is bi-directional| Object_3
+Object_3 --> |This one points to an Obsidian Note| Obsidian_Note_md
+Obsidian_Note_md --> |this one is Non-directional| Object_4_is_red

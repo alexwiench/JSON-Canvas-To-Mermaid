@@ -1,0 +1,15 @@
+flowchart TB
+    subgraph Group of Object 1 2 and 4 with a custom color
+        a5bb7e27d5b42a00[Object 1]
+        453bc2b74f0bd4c3[Object 2 is green]
+        4aa0add92be9e08c[Object 4 is red]
+    end
+    449cb2e419710224[Object 3]
+    099fff712178de35[Obsidian Note.md]
+    a5bb7e27d5b42a00 --> |Text on the arrow pointing to object 2| 453bc2b74f0bd4c3
+    453bc2b74f0bd4c3 <--> |This one is bi-directional| 449cb2e419710224
+    449cb2e419710224 --> |This one points to an Obsidian Note| 099fff712178de35
+    099fff712178de35 --- |this one is Non-directional| 4aa0add92be9e08c
+    style 453bc2b74f0bd4c3 fill:#00ff00
+    style 4aa0add92be9e08c fill:#ff0000
+    style Group of Object 1 2 and 4 with a custom color fill:#ae6cb7
