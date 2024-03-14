@@ -87,7 +87,7 @@ function findChildrenEnhanced(data) {
 	sortedNodes.forEach((node) => {
 		output.nodes.push({
 			...node, // Spread all existing node properties
-			children: node.type === 'group' ? [] : undefined, // Add children array only for groups
+			children: node.type === 'group' ? [] : null, // Add children array only for groups
 		});
 	});
 
