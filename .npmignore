@@ -1,0 +1,5 @@
+node_modules/
+tests/
+.gitignore
+bun.lockb
+ExampleUsage.js
