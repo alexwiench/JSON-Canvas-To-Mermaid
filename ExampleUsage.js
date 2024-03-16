@@ -48,5 +48,14 @@ let data = {
 // Output json data with `children` property added
 console.log(buildJsonCanvasHierarchy(data));
 
-// Output mermaid flowchart with custom #2 and #4 colors and specifiying the graph direction
-console.log(generateMermaidFlowchart(data, { 2: '#d7d544', 4: '#e9973f' }, 'LR'));
+// OPTIONAL - Overwrite any or all of the 6 default colors
+const customColors = {
+	2: '#ff0000',
+	4: '#00ff00',
+};
+
+// OPTIONAL - Change Mermaid graph direction
+const graphDirection = 'LR';
+
+// Output mermaid flowchart
+console.log(generateMermaidFlowchart(data, customColors, graphDirection));
