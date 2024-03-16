@@ -1,186 +1,278 @@
-//sample data
-const data = {
-	nodes: [
-		{
-			id: '3ea9a8d983999dff',
-			x: -1399,
-			y: -797,
-			width: 290,
-			height: 277,
-			color: '#6100c2',
-			type: 'group',
-			label: 'Custom Color Group',
-		},
-		{
-			id: 'ab749aad051ef1ba',
-			type: 'text',
-			text: 'Red Node',
-			x: -1379,
-			y: -777,
-			width: 250,
-			height: 60,
-			color: '1',
-		},
-		{
-			id: '475c4e9b9527f089',
-			type: 'text',
-			text: 'Yellow Node',
-			x: -1379,
-			y: -600,
-			width: 250,
-			height: 60,
-			color: '3',
-		},
-	],
-	edges: [
-		{
-			id: '6eb92706a8b669d5',
-			fromNode: 'ab749aad051ef1ba',
-			fromSide: 'bottom',
-			toNode: '475c4e9b9527f089',
-			toSide: 'top',
-			color: '2',
-			label: 'Orange Line',
-		},
-	],
-};
+/**
+ * Generates a Mermaid Flowchart syntax based on the provided JSON Canvas data.
+ *
+ * @param {Object} data - The data object containing JSON Canvasnodes and edges.
+ * @param {Object} [customColors={}] - Custom color mapping for nodes and edges. Maximum of 6 colors.
+ *   Example: { 1: '#ff0000', 2: '#00ff00', 3: '#0000ff' }
+ * @param {string} [graphDirection='TB'] - The direction of the graph. Valid options are:
+ *   - 'TB' (top to bottom)
+ *   - 'LR' (left to right)
+ *   - 'BT' (bottom to top)
+ *   - 'RL' (right to left)
+ * @returns {string} The generated Mermaid Flowchart syntax.
+ * @throws {Error} If an invalid graph direction is provided.
+ */
+export default function generateMermaidFlowchart(data, customColors = {}, graphDirection = 'TB') {
+	// ========== PARAMATER VALIDATION ==========
 
-//Create group & node heirarchy by assigning children to groups.
-function findChildren(data) {
-	function isPointInsideGroup(point, group) {
-		const { x, y, width, height } = group;
-		return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
+	//todo - add data validation
+
+	//todo - add custom color validation
+
+	// Validate the direction parameter
+	const validDirections = ['TB', 'LR', 'BT', 'RL'];
+	if (!validDirections.includes(graphDirection)) {
+		throw new Error('Invalid graph direction. Only "TB", "LR", "BT", and "RL" are allowed.');
 	}
 
-	function findMidpoint(node) {
-		return {
-			x: node.x + node.width / 2,
-			y: node.y + node.height / 2,
+	// ========== COLOR GENERATION ==========
+	// Adds custom colors to the default color map if provided.
+	function createColorMap(customColors) {
+		const defaultColorMap = {
+			1: '#fb464c', // red
+			2: '#e9973f', // orange
+			3: '#e9973f', // yellow
+			4: '#44cf6e', // green
+			5: '#53dfdd', // cyan
+			6: '#a882ff', // purple
 		};
+
+		const colorMap = { ...defaultColorMap, ...customColors };
+		return colorMap;
 	}
 
-	function sortGroupsByArea(nodes) {
-		return nodes.slice().sort((a, b) => {
-			if (a.type !== 'group' || b.type !== 'group') return 0;
-			const areaA = a.width * a.height;
-			const areaB = b.width * b.height;
-			return areaA - areaB;
-		});
+	const colorMap = createColorMap(customColors);
+
+	// Helper function to get the color based on the custom color map
+	function getColor(color) {
+		return colorMap[color] || color;
 	}
 
-	const sortedNodes = sortGroupsByArea(data.nodes);
-
-	const output = {
-		nodes: [],
-		edges: [...data.edges],
-	};
-
-	sortedNodes.forEach((node) => {
-		output.nodes.push({
-			...node,
-			children: node.type === 'group' ? [] : null,
-		});
-	});
-
-	const nodeMap = output.nodes.reduce((acc, node) => {
-		acc[node.id] = node;
-		return acc;
-	}, {});
-
-	output.nodes.forEach((node, index) => {
-		if (node.type === 'group') {
-			const midpoint = findMidpoint(node);
-			for (let i = index + 1; i < sortedNodes.length; i++) {
-				const potentialParent = sortedNodes[i];
-				if (potentialParent.type !== 'group') continue;
-				if (isPointInsideGroup(midpoint, potentialParent)) {
-					nodeMap[potentialParent.id].children.push(node.id);
-					break;
-				}
-			}
-		} else {
-			const nodeCenter = findMidpoint(node);
-			for (let i = 0; i < sortedNodes.length; i++) {
-				const potentialParent = sortedNodes[i];
-				if (potentialParent.type !== 'group') continue;
-				if (isPointInsideGroup(nodeCenter, potentialParent)) {
-					nodeMap[potentialParent.id].children.push(node.id);
-					break;
-				}
-			}
+	// ========== CREATE NODE HIERARCHY ==========
+	//Create group & node heirarchy by assigning children to groups.
+	function findChildren(data) {
+		function isPointInsideGroup(point, group) {
+			const { x, y, width, height } = group;
+			return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
 		}
-	});
 
-	return output;
-}
-
-//New data with children arrays
-const hierarchicalData = findChildren(data);
-
-function generateMermaidFlowchart(data) {
-	const { nodes, edges } = data;
-
-	// Helper function to generate Mermaid Flowchart syntax for a node
-	function generateNodeSyntax(node) {
-		const { id, type, label, text, file, subpath, url } = node;
-		if (type === 'group') {
-			return `subgraph ${id}["${label}"]\n${generateSubgraphSyntax(node)}\nend\n`;
-		} else if (type === 'text') {
-			return `${id}["${text}"]\n`;
-		} else if (type === 'file') {
-			const fileLabel = subpath ? `${file}${subpath}` : file;
-			return `${id}["${fileLabel}"]\n`;
-		} else if (type === 'link') {
-			return `${id}["${url}"]\n`;
+		function findMidpoint(node) {
+			return {
+				x: node.x + node.width / 2,
+				y: node.y + node.height / 2,
+			};
 		}
-		return '';
-	}
 
-	// Helper function to generate Mermaid Flowchart syntax for a subgraph
-	function generateSubgraphSyntax(node) {
-		const { children } = node;
-		let syntax = '';
-		if (children && children.length > 0) {
-			for (const childId of children) {
-				const childNode = nodes.find((n) => n.id === childId);
-				if (childNode) {
-					syntax += generateNodeSyntax(childNode);
-				}
-			}
+		function sortGroupsByArea(nodes) {
+			return nodes.slice().sort((a, b) => {
+				if (a.type !== 'group' || b.type !== 'group') return 0;
+				const areaA = a.width * a.height;
+				const areaB = b.width * b.height;
+				return areaA - areaB;
+			});
 		}
-		return syntax;
-	}
-	// Helper function to generate Mermaid Flowchart syntax for an edge
-	function generateEdgeSyntax(edge) {
-		const { fromNode, toNode, fromEnd = 'none', toEnd = 'arrow', label } = edge;
 
-		const arrowStyleMap = {
-			'none-arrow': '-->',
-			'arrow-none': '<--',
-			'arrow-arrow': '<-->',
-			'none-none': '---',
+		const sortedNodes = sortGroupsByArea(data.nodes);
+
+		const output = {
+			nodes: [],
+			edges: [...data.edges],
 		};
-		const arrowStyle = arrowStyleMap[`${fromEnd}-${toEnd}`] || '---';
 
-		// check if lable exists
-		const edgeLabel = label ? `|${label}|` : '';
+		sortedNodes.forEach((node) => {
+			output.nodes.push({
+				...node,
+				children: node.type === 'group' ? [] : null,
+			});
+		});
 
-		return `${fromNode} ${arrowStyle} ${edgeLabel} ${toNode}\n`;
+		const nodeMap = output.nodes.reduce((acc, node) => {
+			acc[node.id] = node;
+			return acc;
+		}, {});
+
+		output.nodes.forEach((node, index) => {
+			if (node.type === 'group') {
+				const midpoint = findMidpoint(node);
+				for (let i = index + 1; i < sortedNodes.length; i++) {
+					const potentialParent = sortedNodes[i];
+					if (potentialParent.type !== 'group') continue;
+					if (isPointInsideGroup(midpoint, potentialParent)) {
+						nodeMap[potentialParent.id].children.push(node.id);
+						break;
+					}
+				}
+			} else {
+				const nodeCenter = findMidpoint(node);
+				for (let i = 0; i < sortedNodes.length; i++) {
+					const potentialParent = sortedNodes[i];
+					if (potentialParent.type !== 'group') continue;
+					if (isPointInsideGroup(nodeCenter, potentialParent)) {
+						nodeMap[potentialParent.id].children.push(node.id);
+						break;
+					}
+				}
+			}
+		});
+
+		return output;
 	}
 
-	// Generate Mermaid Flowchart syntax for each node
-	let flowchartSyntax = 'graph TB\n';
-	for (const node of nodes) {
-		flowchartSyntax += generateNodeSyntax(node);
+	//New data with children arrays
+	const hierarchicalData = findChildren(data);
+
+	// ========== GENERATE MERMAID CODE ==========
+	// Uses the hierarchical data to generate the Mermaid Flowchart syntax
+	function generateMermaidFlowchart(data) {
+		const { nodes, edges } = data;
+
+		// This will store styles for nodes and edges/lines for use later
+		let graphStyles = '';
+
+		// Helper function to generate Mermaid Flowchart syntax for a node
+		function generateNodeSyntax(node) {
+			const { id, type, label, text, file, subpath, url, color } = node;
+
+			// Add styling for node
+			generateNodeStyle(node);
+
+			if (type === 'group') {
+				// Handle empty group label
+				let newGroupLabel;
+				if (label === '') {
+					newGroupLabel = ' ';
+				} else {
+					newGroupLabel = label;
+				}
+				return `subgraph ${id}["${newGroupLabel}"]\n${generateSubgraphSyntax(node)}\nend\n`;
+			} else if (type === 'text') {
+				//Handle empty node label
+				let newText;
+				if (text === '') {
+					newText = ' ';
+				} else {
+					newText = text;
+				}
+				return `${id}["${newText}"]\n`;
+			} else if (type === 'file') {
+				const fileLabel = subpath ? `${file}${subpath}` : file;
+				return `${id}["${fileLabel}"]\n`;
+			} else if (type === 'link') {
+				return `${id}["${url}"]\n`;
+			}
+			return '';
+		}
+
+		// Helper function to generate Mermaid Flowchart syntax for a subgraph
+		function generateSubgraphSyntax(node) {
+			const { children } = node;
+			let syntax = '';
+			if (children && children.length > 0) {
+				for (const childId of children) {
+					const childNode = nodes.find((n) => n.id === childId);
+					if (childNode) {
+						syntax += generateNodeSyntax(childNode);
+					}
+				}
+			}
+			return syntax;
+		}
+		// Helper function to generate Mermaid Flowchart syntax for an edge
+		function generateEdgeSyntax(edge) {
+			const { fromNode, toNode, fromEnd = 'none', toEnd = 'arrow', label } = edge;
+			generateEdgeStyle(edge);
+
+			const arrowStyleMap = {
+				'none-arrow': '-->',
+				'arrow-none': '<--',
+				'arrow-arrow': '<-->',
+				'none-none': '---',
+			};
+			const arrowStyle = arrowStyleMap[`${fromEnd}-${toEnd}`] || '---';
+
+			// check if lable exists
+			const edgeLabel = label ? `|${label}|` : '';
+
+			return `${fromNode} ${arrowStyle} ${edgeLabel} ${toNode}\n`;
+		}
+
+		// Helper function to push brightness of hex colors around
+		function adjustBrightness(hex, percent) {
+			// Remove the '#' character if present
+			hex = hex.replace('#', '');
+
+			// Convert the hex color to RGB
+			let r = parseInt(hex.substring(0, 2), 16);
+			let g = parseInt(hex.substring(2, 4), 16);
+			let b = parseInt(hex.substring(4, 6), 16);
+
+			// Adjust the brightness by the specified percentage
+			const amount = Math.round(2.55 * percent);
+			r = Math.max(0, Math.min(255, r + amount));
+			g = Math.max(0, Math.min(255, g + amount));
+			b = Math.max(0, Math.min(255, b + amount));
+
+			// Convert the RGB values back to hex
+			const rr = r.toString(16).padStart(2, '0');
+			const gg = g.toString(16).padStart(2, '0');
+			const bb = b.toString(16).padStart(2, '0');
+
+			return `#${rr}${gg}${bb}`;
+		}
+
+		// Helper function to generate Mermaid Styling for a node
+		function generateNodeStyle(node) {
+			const { id, color, type } = node;
+
+			// Check to see if color exists
+			if (!color) {
+				return;
+			}
+
+			const nodeColor = getColor(color);
+			const nodeColorALT = adjustBrightness(nodeColor, -20);
+
+			let nodeStyle = `style ${id} fill:${nodeColor}, stroke:${nodeColorALT}\n`;
+
+			graphStyles += nodeStyle;
+		}
+
+		// Helper function to generate Mermaid Styling for an edge
+		let edgeCounter = 0;
+		function generateEdgeStyle(edge) {
+			const { color } = edge;
+
+			// Check to see if color exists
+			if (!color) {
+				return;
+			}
+			const edgeColor = getColor(color);
+			let edgeStyle = `linkStyle ${edgeCounter} stroke:${edgeColor}\n`;
+
+			edgeCounter++;
+			graphStyles += edgeStyle;
+		}
+
+		// Start writing graph syntax
+		let flowchartSyntax = `graph ${graphDirection}\n`;
+
+		// Generate Mermaid Flowchart syntax for each node
+		for (const node of nodes) {
+			flowchartSyntax += generateNodeSyntax(node);
+		}
+
+		// Generate Mermaid Flowchart syntax for each edge/line
+		for (const edge of edges) {
+			flowchartSyntax += generateEdgeSyntax(edge);
+		}
+
+		// Add generated styles at the end
+		flowchartSyntax += graphStyles;
+
+		return flowchartSyntax;
 	}
 
-	// Generate Mermaid Flowchart syntax for each edge/line
-	for (const edge of edges) {
-		flowchartSyntax += generateEdgeSyntax(edge);
-	}
+	const mermaidFlowchart = generateMermaidFlowchart(hierarchicalData);
 
-	return flowchartSyntax;
+	return mermaidFlowchart;
 }
-
-const mermaidFlowchart = generateMermaidFlowchart(hierarchicalData);
-console.log(mermaidFlowchart);

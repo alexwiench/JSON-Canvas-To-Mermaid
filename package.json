@@ -1,11 +1,28 @@
 {
-  "name": "canvastomermaid",
-  "module": "index.js",
-  "type": "module",
-  "devDependencies": {
-    "bun-types": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  }
+	"name": "json-canvas-to-mermaid",
+	"version": "1.0.0",
+	"description": "A module to generate Mermaid Flowchart syntax from JSON Canvas data",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [
+		"mermaid",
+		"flowchart",
+		"json canvas",
+		"obsidian"
+	],
+	"author": "Your Name",
+	"license": "MIT",
+	"repository": "https://github.com/alexwiench/JSON-Canvas-To-Mermaid",
+	"bugs": "https://github.com/alexwiench/JSON-Canvas-To-Mermaid/issues",
+	"homepage": "https://github.com/alexwiench/JSON-Canvas-To-Mermaid#readme",
+	"module": "index.js",
+	"type": "module",
+	"devDependencies": {
+		"bun-types": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	}
 }
