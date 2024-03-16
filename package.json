@@ -10,7 +10,8 @@
 		"mermaid",
 		"flowchart",
 		"json canvas",
-		"obsidian"
+		"obsidian",
+		"mermaidjs"
 	],
 	"author": "Your Name",
 	"license": "MIT",
