@@ -1,3 +1,101 @@
+// ========== CREATE NODE HIERARCHY ==========
+//Create group & node heirarchy by assigning children to groups.
+/**
+ * Builds a hierarchical structure from JSON Canvas data by assigning children to group nodes.
+ *
+ * @param {Object} data - The JSON Canvas data object.
+ * @param {Array} data.nodes - An array of nodes from the JSON Canvas data.
+ * @param {Array} data.edges - An array of edges from the JSON Canvas data.
+ * @returns {Object} The hierarchical structure object.
+ * @returns {Array} output.nodes - An array of nodes with the `children` property added.
+ * @returns {Array} output.edges - An array of edges (remains unchanged from the input).
+ *
+ * @description
+ * The function takes JSON Canvas data as input and builds a hierarchical structure by assigning child nodes to their respective parent group nodes.
+ * It adds a `children` property to each node, which is an array containing the IDs of its child nodes.
+ * If a node is not a group, its `children` property is set to `null`.
+ *
+ * The function follows these steps:
+ * 1. Sorts the nodes by their area (width * height) in ascending order, considering only group nodes.
+ * 2. Creates an output object with `nodes` and `edges` arrays, where `nodes` is initially empty and `edges` is a copy of the input edges.
+ * 3. Iterates over the sorted nodes and adds each node to the `output.nodes` array, initializing the `children` property based on the node type.
+ * 4. Creates a node map object, where the keys are node IDs and the values are the corresponding node objects.
+ * 5. Iterates over the nodes in `output.nodes` and determines the parent-child relationships:
+ *    - For group nodes, it finds the midpoint of the group and checks if it is inside any potential parent group node.
+ *    - For non-group nodes, it finds the center point of the node and checks if it is inside any potential parent group node.
+ *    - If a parent-child relationship is found, the child node's ID is added to the `children` array of the parent node.
+ * 6. Returns the `output` object containing the hierarchical structure.
+ *
+ * Note: The function assumes that the input JSON Canvas data is valid and contains the necessary properties for nodes and edges.
+ */
+export function buildJsonCanvasHierarchy(data) {
+	function isPointInsideGroup(point, group) {
+		const { x, y, width, height } = group;
+		return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
+	}
+
+	function findMidpoint(node) {
+		return {
+			x: node.x + node.width / 2,
+			y: node.y + node.height / 2,
+		};
+	}
+
+	function sortGroupsByArea(nodes) {
+		return nodes.slice().sort((a, b) => {
+			if (a.type !== 'group' || b.type !== 'group') return 0;
+			const areaA = a.width * a.height;
+			const areaB = b.width * b.height;
+			return areaA - areaB;
+		});
+	}
+
+	const sortedNodes = sortGroupsByArea(data.nodes);
+
+	const output = {
+		nodes: [],
+		edges: [...data.edges],
+	};
+
+	sortedNodes.forEach((node) => {
+		output.nodes.push({
+			...node,
+			children: node.type === 'group' ? [] : null,
+		});
+	});
+
+	const nodeMap = output.nodes.reduce((acc, node) => {
+		acc[node.id] = node;
+		return acc;
+	}, {});
+
+	output.nodes.forEach((node, index) => {
+		if (node.type === 'group') {
+			const midpoint = findMidpoint(node);
+			for (let i = index + 1; i < sortedNodes.length; i++) {
+				const potentialParent = sortedNodes[i];
+				if (potentialParent.type !== 'group') continue;
+				if (isPointInsideGroup(midpoint, potentialParent)) {
+					nodeMap[potentialParent.id].children.push(node.id);
+					break;
+				}
+			}
+		} else {
+			const nodeCenter = findMidpoint(node);
+			for (let i = 0; i < sortedNodes.length; i++) {
+				const potentialParent = sortedNodes[i];
+				if (potentialParent.type !== 'group') continue;
+				if (isPointInsideGroup(nodeCenter, potentialParent)) {
+					nodeMap[potentialParent.id].children.push(node.id);
+					break;
+				}
+			}
+		}
+	});
+
+	return output;
+}
+
 /**
  * Generates a Mermaid Flowchart syntax based on the provided JSON Canvas data.
  *
@@ -31,7 +129,7 @@ export default function generateMermaidFlowchart(data, customColors = {}, graphD
 		const defaultColorMap = {
 			1: '#fb464c', // red
 			2: '#e9973f', // orange
-			3: '#e9973f', // yellow
+			3: '#e0de71', // yellow
 			4: '#44cf6e', // green
 			5: '#53dfdd', // cyan
 			6: '#a882ff', // purple
@@ -48,78 +146,8 @@ export default function generateMermaidFlowchart(data, customColors = {}, graphD
 		return colorMap[color] || color;
 	}
 
-	// ========== CREATE NODE HIERARCHY ==========
-	//Create group & node heirarchy by assigning children to groups.
-	function findChildren(data) {
-		function isPointInsideGroup(point, group) {
-			const { x, y, width, height } = group;
-			return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
-		}
-
-		function findMidpoint(node) {
-			return {
-				x: node.x + node.width / 2,
-				y: node.y + node.height / 2,
-			};
-		}
-
-		function sortGroupsByArea(nodes) {
-			return nodes.slice().sort((a, b) => {
-				if (a.type !== 'group' || b.type !== 'group') return 0;
-				const areaA = a.width * a.height;
-				const areaB = b.width * b.height;
-				return areaA - areaB;
-			});
-		}
-
-		const sortedNodes = sortGroupsByArea(data.nodes);
-
-		const output = {
-			nodes: [],
-			edges: [...data.edges],
-		};
-
-		sortedNodes.forEach((node) => {
-			output.nodes.push({
-				...node,
-				children: node.type === 'group' ? [] : null,
-			});
-		});
-
-		const nodeMap = output.nodes.reduce((acc, node) => {
-			acc[node.id] = node;
-			return acc;
-		}, {});
-
-		output.nodes.forEach((node, index) => {
-			if (node.type === 'group') {
-				const midpoint = findMidpoint(node);
-				for (let i = index + 1; i < sortedNodes.length; i++) {
-					const potentialParent = sortedNodes[i];
-					if (potentialParent.type !== 'group') continue;
-					if (isPointInsideGroup(midpoint, potentialParent)) {
-						nodeMap[potentialParent.id].children.push(node.id);
-						break;
-					}
-				}
-			} else {
-				const nodeCenter = findMidpoint(node);
-				for (let i = 0; i < sortedNodes.length; i++) {
-					const potentialParent = sortedNodes[i];
-					if (potentialParent.type !== 'group') continue;
-					if (isPointInsideGroup(nodeCenter, potentialParent)) {
-						nodeMap[potentialParent.id].children.push(node.id);
-						break;
-					}
-				}
-			}
-		});
-
-		return output;
-	}
-
-	//New data with children arrays
-	const hierarchicalData = findChildren(data);
+	//Bu8ild new data with children arrays
+	const hierarchicalData = buildJsonCanvasHierarchy(data);
 
 	// ========== GENERATE MERMAID CODE ==========
 	// Uses the hierarchical data to generate the Mermaid Flowchart syntax
