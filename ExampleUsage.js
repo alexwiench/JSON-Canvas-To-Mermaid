@@ -1,4 +1,4 @@
-import generateMermaidFlowchart, { buildJsonCanvasHierarchy } from '../index.js';
+import generateMermaidFlowchart, { buildJsonCanvasHierarchy } from './index.js';
 
 let data = {
 	nodes: [

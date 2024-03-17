@@ -1,7 +1,7 @@
 {
 	"name": "json-canvas-to-mermaid",
 	"version": "1.0.0",
-	"description": "A module to generate Mermaid Flowchart syntax from JSON Canvas data",
+	"description": "A module to generate Mermaid Graph syntax from JSON Canvas data",
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
@@ -13,7 +13,7 @@
 		"obsidian",
 		"mermaidjs"
 	],
-	"author": "Your Name",
+	"author": "Alex Wiench",
 	"license": "MIT",
 	"repository": "https://github.com/alexwiench/JSON-Canvas-To-Mermaid",
 	"bugs": "https://github.com/alexwiench/JSON-Canvas-To-Mermaid/issues",
