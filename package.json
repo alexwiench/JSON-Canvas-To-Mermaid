@@ -1,10 +1,10 @@
 {
 	"name": "json-canvas-to-mermaid",
-	"version": "1.0.0",
+	"version": "0.0.0",
 	"description": "A module to generate Mermaid Graph syntax from JSON Canvas data",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\""
 	},
 	"keywords": [
 		"mermaid",
