@@ -17,7 +17,7 @@
 	"license": "MIT",
 	"repository": "https://github.com/alexwiench/JSON-Canvas-To-Mermaid",
 	"bugs": "https://github.com/alexwiench/JSON-Canvas-To-Mermaid/issues",
-	"homepage": "https://github.com/alexwiench/JSON-Canvas-To-Mermaid#readme",
+	"homepage": "https://alexwiench.github.io/json-canvas-to-mermaid-demo/",
 	"module": "index.js",
 	"type": "module",
 	"devDependencies": {

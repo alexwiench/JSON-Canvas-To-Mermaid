@@ -4,6 +4,8 @@ Quicky convert JSON Canvas to a Mermaid diagram!
 
 This package exports two functions. The `generateMermaidFlowchart()` function converts your canvas into Mermaid syntax. The `buildJsonCanvasHierarchy()` function extends the JSON Canvas data with a `children` property and adds the IDs of a group's children to it. This is useful for building tools utilizing JSON Canvas, as an explicit hierarchy is not included as part of the JSON Canvas spec.
 
+Live demo site: https://alexwiench.github.io/json-canvas-to-mermaid-demo/
+
 Learn More:
 
 - JSON Canvas: <https://jsoncanvas.org/>
