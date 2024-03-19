@@ -272,6 +272,7 @@ export default function generateMermaidFlowchart(data, customColors = {}, graphD
 
 			// Check to see if color exists
 			if (!color) {
+				edgeCounter++;
 				return;
 			}
 			const edgeColor = getColor(color);
