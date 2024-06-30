@@ -50,7 +50,7 @@ describe('generateMermaidFlowchart', () => {
 					{ id: 'node1', x: 0, y: 0, width: 100, height: 50, type: 'text', text: 'Node 1' },
 					{ id: 'node2', x: 100, y: 100, width: 100, height: 50, type: 'text', text: 'Node 2' },
 				],
-				edges: [{ fromNode: 'node1', toNode: 'node2' }],
+				edges: [{ id: 'edge', fromNode: 'node1', toNode: 'node2' }],
 			};
 
 			const result = generateMermaidFlowchart(input, {}, 'LR');
