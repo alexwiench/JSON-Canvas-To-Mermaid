@@ -4,7 +4,7 @@
 	"description": "A module to generate Mermaid Graph syntax from JSON Canvas data",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\""
+		"test": "bun test"
 	},
 	"keywords": [
 		"mermaid",
