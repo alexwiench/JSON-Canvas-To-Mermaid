@@ -219,9 +219,9 @@ export default function generateMermaidFlowchart(data, customColors = {}, graphD
 			const arrowStyle = arrowStyleMap[`${fromEnd}-${toEnd}`] || '---';
 
 			// check if lable exists
-			const edgeLabel = label ? `|${label}|` : '';
+			const edgeLabel = label ? ` |${label}|` : '';
 
-			return `${fromNode} ${arrowStyle} ${edgeLabel} ${toNode}\n`;
+			return `${fromNode} ${arrowStyle}${edgeLabel} ${toNode}\n`;
 		}
 
 		// Helper function to push brightness of hex colors around
