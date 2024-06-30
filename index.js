@@ -11,22 +11,12 @@
  * @returns {Array} output.edges - An array of edges (remains unchanged from the input).
  *
  * @description
- * The function takes JSON Canvas data as input and builds a hierarchical structure by assigning child nodes to their respective parent group nodes.
- * It adds a `children` property to each node, which is an array containing the IDs of its child nodes.
- * If a node is not a group, its `children` property is set to `null`.
- *
- * The function follows these steps:
- * 1. Sorts the nodes by their area (width * height) in ascending order, considering only group nodes.
- * 2. Creates an output object with `nodes` and `edges` arrays, where `nodes` is initially empty and `edges` is a copy of the input edges.
- * 3. Iterates over the sorted nodes and adds each node to the `output.nodes` array, initializing the `children` property based on the node type.
- * 4. Creates a node map object, where the keys are node IDs and the values are the corresponding node objects.
- * 5. Iterates over the nodes in `output.nodes` and determines the parent-child relationships:
- *    - For group nodes, it finds the midpoint of the group and checks if it is inside any potential parent group node.
- *    - For non-group nodes, it finds the center point of the node and checks if it is inside any potential parent group node.
- *    - If a parent-child relationship is found, the child node's ID is added to the `children` array of the parent node.
- * 6. Returns the `output` object containing the hierarchical structure.
- *
- * Note: The function assumes that the input JSON Canvas data is valid and contains the necessary properties for nodes and edges.
+ * This function creates a parent-child hierarchy for nodes based on their spatial relationships:
+ * - Group nodes can contain other nodes (including other groups).
+ * - A node is considered a child of a group if its center point is within the group's bounds.
+ * - Each node can have only one parent group.
+ * - Non-group nodes have their 'children' property set to null.
+ * - The function preserves the original edge data.
  */
 export function buildJsonCanvasHierarchy(data) {
 	function isPointInsideGroup(point, group) {
@@ -99,16 +89,23 @@ export function buildJsonCanvasHierarchy(data) {
 /**
  * Generates a Mermaid Flowchart syntax based on the provided JSON Canvas data.
  *
- * @param {Object} data - The data object containing JSON Canvasnodes and edges.
- * @param {Object} [customColors={}] - Custom color mapping for nodes and edges. Maximum of 6 colors.
+ * @param {Object} data - The JSON Canvas data object containing nodes and edges.
+ * @param {Object} [customColors={}] - Optional custom color mapping for nodes and edges.
+ *   Keys are color identifiers, values are hex color codes. Maximum of 6 colors.
  *   Example: { 1: '#ff0000', 2: '#00ff00', 3: '#0000ff' }
- * @param {string} [graphDirection='TB'] - The direction of the graph. Valid options are:
- *   - 'TB' (top to bottom)
- *   - 'LR' (left to right)
- *   - 'BT' (bottom to top)
- *   - 'RL' (right to left)
+ * @param {string} [graphDirection='TB'] - Optional direction of the graph.
+ *   Valid options are: 'TB' (top to bottom), 'LR' (left to right),
+ *   'BT' (bottom to top), 'RL' (right to left).
  * @returns {string} The generated Mermaid Flowchart syntax.
  * @throws {Error} If an invalid graph direction is provided.
+ *
+ * @description
+ * This function converts JSON Canvas data into Mermaid Flowchart syntax:
+ * - Supports various node types: text, file, link, and group.
+ * - Handles nested group structures.
+ * - Applies custom colors to nodes and edges if provided.
+ * - Generates appropriate syntax for different edge types and labels.
+ * - The output can be used directly with Mermaid to render a flowchart.
  */
 export default function generateMermaidFlowchart(data, customColors = {}, graphDirection = 'TB') {
 	// ========== PARAMATER VALIDATION ==========
