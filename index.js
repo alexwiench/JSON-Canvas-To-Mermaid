@@ -1,3 +1,5 @@
+import * as validator from './validator.js';
+
 // ========== CREATE NODE HIERARCHY ==========
 //Create group & node heirarchy by assigning children to groups.
 /**
@@ -19,6 +21,10 @@
  * - The function preserves the original edge data.
  */
 export function buildJsonCanvasHierarchy(data) {
+	// validateJsonCanvasData(data);
+
+	validator.validateJsonCanvasData(data);
+
 	function isPointInsideGroup(point, group) {
 		const { x, y, width, height } = group;
 		return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
@@ -86,6 +92,7 @@ export function buildJsonCanvasHierarchy(data) {
 	return output;
 }
 
+// ========== CREATE MERMAID SYNTAX ==========
 /**
  * Generates a Mermaid Flowchart syntax based on the provided JSON Canvas data.
  *
@@ -108,17 +115,10 @@ export function buildJsonCanvasHierarchy(data) {
  * - The output can be used directly with Mermaid to render a flowchart.
  */
 export default function generateMermaidFlowchart(data, customColors = {}, graphDirection = 'TB') {
-	// ========== PARAMATER VALIDATION ==========
-
-	//todo - add data validation
-
-	//todo - add custom color validation
-
-	// Validate the direction parameter
-	const validDirections = ['TB', 'LR', 'BT', 'RL'];
-	if (!validDirections.includes(graphDirection)) {
-		throw new Error('Invalid graph direction. Only "TB", "LR", "BT", and "RL" are allowed.');
-	}
+	// Validate parameters
+	// The data parameter is validated in the buildJsonCanvasHierarchy function so we don't need to validate it here.
+	validator.validateCustomColors(customColors);
+	validator.validateGraphDirection(graphDirection);
 
 	// ========== COLOR GENERATION ==========
 	// Adds custom colors to the default color map if provided.
