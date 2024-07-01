@@ -3,31 +3,29 @@
 [![npm version](https://badge.fury.io/js/json-canvas-to-mermaid.svg)](https://badge.fury.io/js/json-canvas-to-mermaid)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Transform your JSON Canvas data into beautiful Mermaid flowcharts with ease. This lightweight and powerful library bridges the gap between JSON Canvas and Mermaid, enabling you to visualize your canvas data in a whole new way.
+Transform your JSON Canvas data into Mermaid flowcharts with ease. This lightweight and powerful library bridges the gap between JSON Canvas and Mermaid, enabling you to visualize your canvas data in a whole new way.
 
-Live demo site: https://alexwiench.github.io/json-canvas-to-mermaid-demo/
-
-Check out the related projects:
-
-- JSON Canvas: https://jsoncanvas.org/
-- Mermaid: https://mermaid.js.org/
+> [!TIP]
+> Give it a try! Convert `.canvas` files to Mermaid syntax right in your browser. https://alexwiench.github.io/json-canvas-to-mermaid-demo/
 
 ## Table of Contents
 
-- [JSON Canvas to Mermaid](#json-canvas-to-mermaid)
-	- [Table of Contents](#table-of-contents)
-	- [Features](#features)
-	- [Installation](#installation)
-	- [How It Works](#how-it-works)
-	- [Usage](#usage)
-	- [API Reference](#api-reference)
-		- [`convertToMermaid(data, customColors, graphDirection)`](#converttomermaiddata-customcolors-graphdirection)
-		- [Additional Utilities](#additional-utilities)
-	- [Examples](#examples)
-		- [Basic Usage](#basic-usage)
-		- [Custom Colors](#custom-colors)
-		- [Node Hierarchy](#node-hierarchy)
-	- [License](#license)
+- [Table of Contents](#table-of-contents)
+- [Features](#features)
+- [Installation](#installation)
+- [How It Works](#how-it-works)
+- [Usage](#usage)
+- [API Reference](#api-reference)
+	- [`convertToMermaid(data, customColors, graphDirection)`](#converttomermaiddata-customcolors-graphdirection)
+	- [Additional Utilities](#additional-utilities)
+- [Examples](#examples)
+	- [Basic Usage](#basic-usage)
+	- [Advanced Usage](#advanced-usage)
+	- [Using Validation and CreateNodeTree Utilities](#using-validation-and-createnodetree-utilities)
+		- [Validation](#validation)
+		- [CreateNodeTree](#createnodetree)
+- [What are JSON Canvas and Mermaid?](#what-are-json-canvas-and-mermaid)
+- [License](#license)
 
 ## Features
 
@@ -113,7 +111,7 @@ const mermaidSyntax = convertToMermaid(data);
 console.log(mermaidSyntax);
 ```
 
-### Custom Colors
+### Advanced Usage
 
 ```javascript
 const customColors = {
@@ -121,6 +119,8 @@ const customColors = {
 	2: '#00ff00',
 	3: '#0000ff',
 };
+
+const customDirection = 'LR';
 
 const data = {
 	nodes: [
@@ -139,49 +139,118 @@ const data = {
 	edges: [{ id: 'edge1', fromNode: 'node1', toNode: 'node2', color: '3' }],
 };
 
-const mermaidSyntax = convertToMermaid(data, customColors);
+const mermaidSyntax = convertToMermaid(data, customColors, customDirection);
 ```
 
-### Node Hierarchy
+### Using Validation and CreateNodeTree Utilities
 
-The `createNodeTree` function generates a hierarchical structure where each node object includes a `children` array containing the IDs of its child nodes. Here's an example of the output:
+While not necessary for the primary use case, the validation and createNodeTree utilities can be useful in certain scenarios. Here's how you can use them:
+
+#### Validation
+
+You can use the validation functions to check your JSON Canvas data or other parameters:
 
 ```javascript
-{
-  nodes: [
-    {
-      id: 'group1',
-      type: 'group',
-      x: 0,
-      y: 0,
-      width: 300,
-      height: 200,
-      children: ['node1']
-    },
-    {
-      id: 'node1',
-      type: 'text',
-      text: 'Inside Group',
-      x: 50,
-      y: 50,
-      width: 100,
-      height: 50,
-      children: null
-    },
-    {
-      id: 'node2',
-      type: 'text',
-      text: 'Outside Group',
-      x: 400,
-      y: 50,
-      width: 100,
-      height: 50,
-      children: null
-    }
-  ],
-  edges: []
+import { jsonCanvas } from 'json-canvas-to-mermaid';
+
+const data = {
+	nodes: [
+		{ id: 'node1', type: 'text', text: 'Hello', x: 0, y: 0, width: 100, height: 50 },
+		{ id: 'node2', type: 'text', text: 'World', x: 200, y: 0, width: 100, height: 50 },
+	],
+	edges: [{ id: 'edge1', fromNode: 'node1', toNode: 'node2' }],
+};
+
+try {
+	jsonCanvas.validate.data(data);
+	console.log('JSON Canvas data is valid');
+} catch (error) {
+	console.error('Invalid JSON Canvas data:', error.message);
+}
+
+// Validate custom colors
+const customColors = { 1: '#ff0000', 2: '#00ff00' };
+try {
+	jsonCanvas.validate.colors(customColors);
+	console.log('Custom colors are valid');
+} catch (error) {
+	console.error('Invalid custom colors:', error.message);
+}
+
+// Validate graph direction
+const direction = 'LR';
+try {
+	jsonCanvas.validate.direction(direction);
+	console.log('Graph direction is valid');
+} catch (error) {
+	console.error('Invalid graph direction:', error.message);
 }
 ```
+
+#### CreateNodeTree
+
+The createNodeTree function can be used to generate a hierarchical structure from flat JSON Canvas data:
+
+```javascript
+import { jsonCanvas } from 'json-canvas-to-mermaid';
+
+const data = {
+	nodes: [
+		{ id: 'group1', type: 'group', x: 0, y: 0, width: 300, height: 200 },
+		{ id: 'node1', type: 'text', text: 'Inside Group', x: 50, y: 50, width: 100, height: 50 },
+		{ id: 'node2', type: 'text', text: 'Outside Group', x: 400, y: 50, width: 100, height: 50 },
+	],
+	edges: [],
+};
+
+const hierarchicalData = jsonCanvas.createNodeTree(data);
+console.log(JSON.stringify(hierarchicalData, null, 2));
+
+// Output:
+// {
+//   "nodes": [
+//     {
+//       "id": "group1",
+//       "type": "group",
+//       "x": 0,
+//       "y": 0,
+//       "width": 300,
+//       "height": 200,
+//       "children": ["node1"]
+//     },
+//     {
+//       "id": "node1",
+//       "type": "text",
+//       "text": "Inside Group",
+//       "x": 50,
+//       "y": 50,
+//       "width": 100,
+//       "height": 50,
+//       "children": null
+//     },
+//     {
+//       "id": "node2",
+//       "type": "text",
+//       "text": "Outside Group",
+//       "x": 400,
+//       "y": 50,
+//       "width": 100,
+//       "height": 50,
+//       "children": null
+//     }
+//   ],
+//   "edges": []
+// }
+```
+
+This hierarchical structure can be useful if you need to process the JSON Canvas data in a tree-like format for other purposes in your application.
+
+## What are JSON Canvas and Mermaid?
+
+Learn more about those projects here:
+
+- JSON Canvas: https://jsoncanvas.org/
+- Mermaid: https://mermaid.js.org/
 
 ## License
 
