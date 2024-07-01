@@ -1,7 +1,7 @@
 /**
  * Validates the structure and content of JSON Canvas data.
  * @param {Object} data - The JSON Canvas data to validate.
- * @throws {Error} If the data is invalid.
+ * @throws {Error} If the data or structure is invalid.
  */
 export function validateJsonCanvasData(data) {
 	if (typeof data !== 'object' || data === null) {

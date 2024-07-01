@@ -1,5 +1,5 @@
 import { expect, test, describe } from 'bun:test';
-import generateMermaidFlowchart from '../index.js';
+import { jsonCanvas } from '../src/index.js';
 
 describe('generateMermaidFlowchart', () => {
 	describe('Basic Functionality', () => {
@@ -36,7 +36,7 @@ describe('generateMermaidFlowchart', () => {
 				],
 			};
 
-			const result = generateMermaidFlowchart(input);
+			const result = jsonCanvas.convertToMermaid(input);
 
 			expect(result).toContain('graph TB');
 			expect(result).toContain('6b9bdbf30d75d3e5["Node 1"]');
@@ -53,7 +53,7 @@ describe('generateMermaidFlowchart', () => {
 				edges: [{ id: 'edge', fromNode: 'node1', toNode: 'node2' }],
 			};
 
-			const result = generateMermaidFlowchart(input, {}, 'LR');
+			const result = jsonCanvas.convertToMermaid(input, {}, 'LR');
 
 			expect(result).toContain('graph LR');
 		});
@@ -78,7 +78,7 @@ describe('generateMermaidFlowchart', () => {
 				edges: [],
 			};
 
-			const result = generateMermaidFlowchart(input);
+			const result = jsonCanvas.convertToMermaid(input);
 
 			expect(result).toContain('text1["Text Node"]');
 			expect(result).toContain('file1["example.txt"]');
@@ -94,7 +94,7 @@ describe('generateMermaidFlowchart', () => {
 				edges: [],
 			};
 
-			const result = generateMermaidFlowchart(input);
+			const result = jsonCanvas.convertToMermaid(input);
 
 			expect(result).toContain('subgraph group1["Group 1"]');
 			expect(result).toContain('text1["Nested Text"]');
@@ -118,7 +118,7 @@ describe('generateMermaidFlowchart', () => {
 				edges: [],
 			};
 
-			const result = generateMermaidFlowchart(input);
+			const result = jsonCanvas.convertToMermaid(input);
 
 			expect(result).toContain('file1["example.txt/section1"]');
 		});
@@ -137,7 +137,7 @@ describe('generateMermaidFlowchart', () => {
 				],
 			};
 
-			const result = generateMermaidFlowchart(input);
+			const result = jsonCanvas.convertToMermaid(input);
 
 			expect(result).toContain('node1 --> node2');
 			expect(result).toContain('node2 <-- node1');
@@ -152,7 +152,7 @@ describe('generateMermaidFlowchart', () => {
 				edges: [{ id: 'edge1', fromNode: 'node1', toNode: 'node2', label: 'Connection' }],
 			};
 
-			const result = generateMermaidFlowchart(input);
+			const result = jsonCanvas.convertToMermaid(input);
 
 			expect(result).toContain('node1 --> |Connection| node2');
 		});
@@ -177,7 +177,7 @@ describe('generateMermaidFlowchart', () => {
 			};
 			const customColors = { 1: '#ff0000' };
 
-			const result = generateMermaidFlowchart(input, customColors);
+			const result = jsonCanvas.convertToMermaid(input, customColors);
 
 			expect(result).toContain('style node1 fill:#ff0000');
 		});
@@ -188,7 +188,7 @@ describe('generateMermaidFlowchart', () => {
 				edges: [{ id: 'edge1', fromNode: 'node1', toNode: 'node1', color: '2' }],
 			};
 
-			const result = generateMermaidFlowchart(input, { 2: '#00ff00' });
+			const result = jsonCanvas.convertToMermaid(input, { 2: '#00ff00' });
 
 			expect(result).toContain('linkStyle 0 stroke:#00ff00');
 		});

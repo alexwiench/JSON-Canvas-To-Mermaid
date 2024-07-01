@@ -1,4 +1,5 @@
-import generateMermaidFlowchart, { buildJsonCanvasHierarchy } from './index.js';
+import convertToMermaid from './src/convertToMermaid.js';
+import { createNodeTree } from './src/createNodeTree.js';
 
 let data = {
 	nodes: [
@@ -46,7 +47,7 @@ let data = {
 };
 
 // Output json data with `children` property added
-console.log(buildJsonCanvasHierarchy(data));
+console.log(createNodeTree(data));
 
 // OPTIONAL - Overwrite any or all of the 6 default colors
 const customColors = {
@@ -58,4 +59,4 @@ const customColors = {
 const graphDirection = 'LR';
 
 // Output mermaid flowchart
-console.log(generateMermaidFlowchart(data, customColors, graphDirection));
+console.log(convertToMermaid(data, customColors, graphDirection));

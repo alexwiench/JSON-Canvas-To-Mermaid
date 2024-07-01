@@ -1,139 +1,188 @@
 # JSON Canvas to Mermaid
 
-Quicky convert JSON Canvas to a Mermaid diagram!
+[![npm version](https://badge.fury.io/js/json-canvas-to-mermaid.svg)](https://badge.fury.io/js/json-canvas-to-mermaid)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This package exports two functions. The `generateMermaidFlowchart()` function converts your canvas into Mermaid syntax. The `buildJsonCanvasHierarchy()` function extends the JSON Canvas data with a `children` property and adds the IDs of a group's children to it. This is useful for building tools utilizing JSON Canvas, as an explicit hierarchy is not included as part of the JSON Canvas spec.
-
-Install with `npm i json-canvas-to-mermaid`
+Transform your JSON Canvas data into beautiful Mermaid flowcharts with ease. This lightweight and powerful library bridges the gap between JSON Canvas and Mermaid, enabling you to visualize your canvas data in a whole new way.
 
 Live demo site: https://alexwiench.github.io/json-canvas-to-mermaid-demo/
 
-Learn More:
+Check out the related projects:
 
-- JSON Canvas: <https://jsoncanvas.org/>
-- Mermaid: <https://mermaid.js.org/>
+- JSON Canvas: https://jsoncanvas.org/
+- Mermaid: https://mermaid.js.org/
 
-## Avalible Functions
+## Table of Contents
 
-### `generateMermaidFlowchart(data, customColors, graphDirection)`
+- [JSON Canvas to Mermaid](#json-canvas-to-mermaid)
+	- [Table of Contents](#table-of-contents)
+	- [Features](#features)
+	- [Installation](#installation)
+	- [How It Works](#how-it-works)
+	- [Usage](#usage)
+	- [API Reference](#api-reference)
+		- [`convertToMermaid(data, customColors, graphDirection)`](#converttomermaiddata-customcolors-graphdirection)
+		- [Additional Utilities](#additional-utilities)
+	- [Examples](#examples)
+		- [Basic Usage](#basic-usage)
+		- [Custom Colors](#custom-colors)
+		- [Node Hierarchy](#node-hierarchy)
+	- [License](#license)
 
-The generateMermaidFlowchart function accepts the following parameters:
+## Features
 
-- `data` (required): An object that contains the JSON Canvas format.
+- Convert JSON Canvas data to Mermaid flowchart syntax
+- Support for all node types and features in the JSON Canvas spec
+- Handle nested group structures
+- Apply custom colors to nodes and edges
+- Generate appropriate syntax for different edge types and labels
+- Zero dependencies
 
-- `customColors` (optional): An object that allows you to specify custom color mappings for nodes and edges. The keys of the object represent the color identifiers, and the values are the corresponding color codes. If not provided, the function will use the default color map.
+## Installation
 
-- `graphDirection` (optional): A string that specifies the direction of the graph. It determines the orientation of the flowchart. The valid options for graphDirection are:
-  - 'TB' (default): Top to bottom
-  - 'LR': Left to right
-  - 'BT': Bottom to top
-  - 'RL': Right to left
+```bash
+npm install json-canvas-to-mermaid
+```
 
-#### Return Value
+## How It Works
 
-The generateMermaidFlowchart function returns the generated Mermaid Flowchart syntax as a string. This syntax can be used to render the flowchart using Mermaid.
+JSON Canvas to Mermaid works in three main steps:
 
-#### Error Handling
-
-If an invalid graphDirection is provided, the function will throw an error.
-
-### `(buildJsonCanvasHierarchy(data)`
-
-- data (required): An object that contains the JSON Canvas format.
-
-#### Return Value
-
-The buildJsonCanvasHierarchy function returns the generated the inputed data with an additional `children` property on nodes.
+1. **Validation**: It checks the input JSON Canvas data for correctness and completeness.
+2. **Hierarchy Creation**: It builds a tree-like structure from the flat JSON Canvas data, identifying parent-child relationships between nodes.
+3. **Mermaid Syntax Generation**: It converts the hierarchical structure into Mermaid flowchart syntax, handling various node types, edges, and styling.
 
 ## Usage
 
-```js
-import generateMermaidFlowchart, { buildJsonCanvasHierarchy } from './index.js';
+Here's a quick example of how to use the library:
 
-let data = {
+```javascript
+import { convertToMermaid } from 'json-canvas-to-mermaid';
+
+const jsonCanvasData = {
 	nodes: [
-		{
-			id: '6f002d2b0257ffa4',
-			x: -1601,
-			y: -826,
-			width: 631,
-			height: 100,
-			color: '#248a42',
-			type: 'group',
-			label: 'Group One',
-		},
-		{
-			id: '5696e6f4d7feef3b',
-			x: -1581,
-			y: -806,
-			width: 250,
-			height: 60,
-			color: '4',
-			type: 'text',
-			text: 'Node One',
-		},
-		{
-			id: 'eb886f14ff2b15a1',
-			x: -1240,
-			y: -806,
-			width: 250,
-			height: 60,
-			color: '6',
-			type: 'text',
-			text: 'Node Two',
-		},
+		{ id: 'node1', type: 'text', text: 'Hello', x: 0, y: 0, width: 100, height: 50 },
+		{ id: 'node2', type: 'text', text: 'World', x: 200, y: 0, width: 100, height: 50 },
 	],
-	edges: [
+	edges: [{ id: 'edge1', fromNode: 'node1', toNode: 'node2' }],
+};
+
+const mermaidSyntax = convertToMermaid(jsonCanvasData);
+console.log(mermaidSyntax);
+```
+
+## API Reference
+
+### `convertToMermaid(data, customColors, graphDirection)`
+
+Converts JSON Canvas data to Mermaid flowchart syntax.
+
+- `data`: The JSON Canvas data object containing nodes and edges.
+- `customColors` (optional): An object mapping color identifiers to hex color codes. Maximum of 6 colors.
+- `graphDirection` (optional): The direction of the graph. Valid options are 'TB', 'LR', 'BT', 'RL'. Default is 'TB'.
+
+Returns a string containing the Mermaid flowchart syntax.
+
+### Additional Utilities
+
+The library also exports some additional utilities that were developed as part of this project. While not necessary for the primary use case, they're available if you need them for other projects:
+
+- `createNodeTree(data)`: Creates a hierarchical structure from flat JSON Canvas data.
+- `validateJsonCanvasData(data)`: Validates the structure and content of JSON Canvas data.
+- `validateCustomColors(customColors)`: Validates the custom colors object.
+- `validateGraphDirection(graphDirection)`: Validates the graph direction parameter.
+
+These functions are not required for normal use of the library but are exposed for developers who might find them useful in other contexts.
+
+## Examples
+
+### Basic Usage
+
+```javascript
+import { convertToMermaid } from 'json-canvas-to-mermaid';
+
+const data = {
+	nodes: [
+		{ id: 'node1', type: 'text', text: 'Node 1', x: 0, y: 0, width: 100, height: 50 },
+		{ id: 'node2', type: 'text', text: 'Node 2', x: 200, y: 0, width: 100, height: 50 },
+	],
+	edges: [{ id: 'edge1', fromNode: 'node1', toNode: 'node2' }],
+};
+
+const mermaidSyntax = convertToMermaid(data);
+console.log(mermaidSyntax);
+```
+
+### Custom Colors
+
+```javascript
+const customColors = {
+	1: '#ff0000',
+	2: '#00ff00',
+	3: '#0000ff',
+};
+
+const data = {
+	nodes: [
+		{ id: 'node1', type: 'text', text: 'Red Node', x: 0, y: 0, width: 100, height: 50, color: '1' },
 		{
-			id: 'ed452a5525485f24',
-			fromNode: '5696e6f4d7feef3b',
-			fromSide: 'right',
-			toNode: 'eb886f14ff2b15a1',
-			toSide: 'left',
+			id: 'node2',
+			type: 'text',
+			text: 'Green Node',
+			x: 200,
+			y: 0,
+			width: 100,
+			height: 50,
 			color: '2',
 		},
 	],
+	edges: [{ id: 'edge1', fromNode: 'node1', toNode: 'node2', color: '3' }],
 };
 
-// Output json data with `children` property added
-console.log(buildJsonCanvasHierarchy(data));
-
-// OPTIONAL - Overwrite any or all of the 6 default colors
-const customColors = {
-	2: '#ff0000',
-	4: '#00ff00',
-};
-
-// OPTIONAL - Change Mermaid graph direction
-const graphDirection = 'LR';
-
-// Output mermaid flowchart
-console.log(generateMermaidFlowchart(data, customColors, graphDirection));
+const mermaidSyntax = convertToMermaid(data, customColors);
 ```
 
-Mermaid output:
+### Node Hierarchy
 
-```Mermaid
-graph LR
-subgraph 6f002d2b0257ffa4["Group One"]
-5696e6f4d7feef3b["Node One"]
-eb886f14ff2b15a1["Node Two"]
+The `createNodeTree` function generates a hierarchical structure where each node object includes a `children` array containing the IDs of its child nodes. Here's an example of the output:
 
-end
-5696e6f4d7feef3b["Node One"]
-eb886f14ff2b15a1["Node Two"]
-5696e6f4d7feef3b -->  eb886f14ff2b15a1
-style 6f002d2b0257ffa4 fill:#248a42, stroke:#00570f
-style 5696e6f4d7feef3b fill:#00ff00, stroke:#00cc00
-style eb886f14ff2b15a1 fill:#a882ff, stroke:#754fcc
-style 5696e6f4d7feef3b fill:#00ff00, stroke:#00cc00
-style eb886f14ff2b15a1 fill:#a882ff, stroke:#754fcc
-linkStyle 0 stroke:#ff0000
+```javascript
+{
+  nodes: [
+    {
+      id: 'group1',
+      type: 'group',
+      x: 0,
+      y: 0,
+      width: 300,
+      height: 200,
+      children: ['node1']
+    },
+    {
+      id: 'node1',
+      type: 'text',
+      text: 'Inside Group',
+      x: 50,
+      y: 50,
+      width: 100,
+      height: 50,
+      children: null
+    },
+    {
+      id: 'node2',
+      type: 'text',
+      text: 'Outside Group',
+      x: 400,
+      y: 50,
+      width: 100,
+      height: 50,
+      children: null
+    }
+  ],
+  edges: []
+}
 ```
 
-For working sample, download this repository and run `ExampleUsage.js`
+## License
 
-## Roadmap
-
-- Add validation for data and color paramaters
-- Update as the JSON Canvas spec evolves.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
