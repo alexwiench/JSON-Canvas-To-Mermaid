@@ -1,6 +1,6 @@
 {
 	"name": "json-canvas-to-mermaid",
-	"version": "1.1.0",
+	"version": "2.0.0",
 	"description": "A module to generate Mermaid Graph syntax from JSON Canvas data",
 	"main": "src/index.js",
 	"scripts": {
