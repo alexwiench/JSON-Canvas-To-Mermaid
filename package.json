@@ -2,7 +2,7 @@
 	"name": "json-canvas-to-mermaid",
 	"version": "1.1.0",
 	"description": "A module to generate Mermaid Graph syntax from JSON Canvas data",
-	"main": "index.js",
+	"main": "src/index.js",
 	"scripts": {
 		"test": "bun test"
 	},
@@ -18,7 +18,7 @@
 	"repository": "https://github.com/alexwiench/JSON-Canvas-To-Mermaid",
 	"bugs": "https://github.com/alexwiench/JSON-Canvas-To-Mermaid/issues",
 	"homepage": "https://alexwiench.github.io/json-canvas-to-mermaid-demo/",
-	"module": "index.js",
+	"module": "src/index.js",
 	"type": "module",
 	"devDependencies": {
 		"bun-types": "latest"

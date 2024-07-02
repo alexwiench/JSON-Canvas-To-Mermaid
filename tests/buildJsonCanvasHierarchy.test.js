@@ -1,5 +1,5 @@
 import { expect, test, describe } from 'bun:test';
-import { buildJsonCanvasHierarchy } from '../index.js';
+import { jsonCanvas } from '../src/index.js';
 
 describe('buildJsonCanvasHierarchy', () => {
 	describe('Group Hierarchy', () => {
@@ -31,7 +31,7 @@ describe('buildJsonCanvasHierarchy', () => {
 				edges: [],
 			};
 
-			const result = buildJsonCanvasHierarchy(input);
+			const result = jsonCanvas.createNodeTree(input);
 
 			expect(result.nodes).toHaveLength(5);
 			expect(result.nodes.find((n) => n.id === 'Group 1').children).toEqual(['Group 2', 'Node 1']);
@@ -59,7 +59,7 @@ describe('buildJsonCanvasHierarchy', () => {
 				edges: [],
 			};
 
-			const result = buildJsonCanvasHierarchy(input);
+			const result = jsonCanvas.createNodeTree(input);
 
 			expect(result.nodes.find((n) => n.id === 'Group 1').children).toEqual(['Node 1']);
 			expect(result.nodes.find((n) => n.id === 'Group 2').children).toEqual(['Group 1']);
@@ -77,7 +77,7 @@ describe('buildJsonCanvasHierarchy', () => {
 				edges: [],
 			};
 
-			const result = buildJsonCanvasHierarchy(input);
+			const result = jsonCanvas.createNodeTree(input);
 
 			expect(result.nodes.find((n) => n.id === 'Group').children).toEqual(['Inside']);
 			expect(result.nodes.find((n) => n.id === 'Outside').children).toBeNull();
@@ -105,7 +105,7 @@ describe('buildJsonCanvasHierarchy', () => {
 				],
 			};
 
-			const result = buildJsonCanvasHierarchy(input);
+			const result = jsonCanvas.createNodeTree(input);
 
 			expect(result.edges).toEqual(input.edges);
 		});
@@ -114,7 +114,7 @@ describe('buildJsonCanvasHierarchy', () => {
 	describe('Special Cases', () => {
 		test('should handle empty input correctly', () => {
 			const input = { nodes: [], edges: [] };
-			const result = buildJsonCanvasHierarchy(input);
+			const result = jsonCanvas.createNodeTree(input);
 			expect(result.nodes).toEqual([]);
 			expect(result.edges).toEqual([]);
 		});
@@ -128,7 +128,7 @@ describe('buildJsonCanvasHierarchy', () => {
 				edges: [],
 			};
 
-			const result = buildJsonCanvasHierarchy(input);
+			const result = jsonCanvas.createNodeTree(input);
 
 			expect(result.nodes).toHaveLength(2);
 			expect(result.nodes[0].children).toBeNull();
