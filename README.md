@@ -55,7 +55,7 @@ JSON Canvas to Mermaid works in three main steps:
 Here's a quick example of how to use the library:
 
 ```javascript
-import { convertToMermaid } from 'json-canvas-to-mermaid';
+import convertToMermaid from 'json-canvas-to-mermaid';
 
 const jsonCanvasData = {
 	nodes: [
@@ -97,7 +97,7 @@ These functions are not required for normal use of the library but are exposed f
 ### Basic Usage
 
 ```javascript
-import { convertToMermaid } from 'json-canvas-to-mermaid';
+import convertToMermaid from 'json-canvas-to-mermaid';
 
 const data = {
 	nodes: [
